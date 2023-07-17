@@ -46,12 +46,12 @@
       }
     },
     {
-      "identity" : "fluent-sqlite-driver",
+      "identity" : "fluent-postgres-driver",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor/fluent-sqlite-driver.git",
+      "location" : "https://github.com/vapor/fluent-postgres-driver.git",
       "state" : {
-        "revision" : "138a546e3b7e33efa5362e05da2a0dec3a30534f",
-        "version" : "4.5.0"
+        "revision" : "a538fc647f82d915eb84e0a12ca9b08c513e57c4",
+        "version" : "2.8.0"
       }
     },
     {
@@ -61,6 +61,24 @@
       "state" : {
         "revision" : "1adfd69df2da08f7931d4281b257475e32c96734",
         "version" : "4.5.4"
+      }
+    },
+    {
+      "identity" : "postgres-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/postgres-kit.git",
+      "state" : {
+        "revision" : "b69f427924b00718e8190701e4f410e9c0823770",
+        "version" : "2.11.4"
+      }
+    },
+    {
+      "identity" : "postgres-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/postgres-nio.git",
+      "state" : {
+        "revision" : "061a0836d7c1887e04a975d1d2eaa2ef5fd7dfab",
+        "version" : "1.16.0"
       }
     },
     {
@@ -79,24 +97,6 @@
       "state" : {
         "revision" : "b2f128cb62a3abfbb1e3b2893ff3ee69e70f4f0f",
         "version" : "3.28.0"
-      }
-    },
-    {
-      "identity" : "sqlite-kit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor/sqlite-kit.git",
-      "state" : {
-        "revision" : "2b20fc0f4f6574f59dae402ccf0ed050c6790b43",
-        "version" : "4.3.1"
-      }
-    },
-    {
-      "identity" : "sqlite-nio",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor/sqlite-nio.git",
-      "state" : {
-        "revision" : "2b7bcf3d2e4d2f68d52a66d12d2057867cee383a",
-        "version" : "1.5.2"
       }
     },
     {
