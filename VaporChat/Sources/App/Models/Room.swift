@@ -1,0 +1,26 @@
+//
+//  File.swift
+//  
+//
+//  Created by Developer on 23.07.2023.
+//
+
+import Vapor
+import Fluent
+
+final class Room: Model, Content {    
+    static let schema = "rooms"
+    
+    @ID(key: .id)
+    var id: UUID?
+    
+    @Field(key: "users")
+    var users: [String]
+    
+    init() { }
+    
+    init(id: UUID? = UUID(), users: [String]) {
+        self.id = id
+        self.users = users
+    }
+}
