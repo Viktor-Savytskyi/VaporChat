@@ -26,14 +26,18 @@ final class UserMessage: Model, Content {
     @Field(key: "roomID")
     var roomID: String?
     
+    @Timestamp(key: "createdAt", on: .create, format: .iso8601)
+    var createdAt: Date?
+    
     init() {}
     
-    init(id: UUID? = nil, senderID: String, receiverID: String, message: String, roomID: String?) {
+    init(id: UUID? = nil, senderID: String, receiverID: String, message: String, roomID: String?, createdAt: Date?) {
         self.id = id
         self.senderID = senderID
         self.receiverID = receiverID
         self.message = message
         self.roomID = roomID
+        self.createdAt = createdAt
     }
     
     func convertToJsonData() throws -> Data {

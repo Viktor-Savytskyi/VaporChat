@@ -18,7 +18,7 @@ class RoomController {
     }
     
     func addUser(userID: String, ws: WebSocket?) {
-            connections[userID] = ws
+        connections[userID] = ws
         print("Users CONNECTIONS: \(connections)")
     }
     

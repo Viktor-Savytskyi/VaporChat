@@ -14,9 +14,8 @@ public func configure(_ app: Application) async throws {
         database: "postgres"
     ), as: .psql)
 
-//    app.migrations.add(CreateUser())
-//    app.migrations.add(CreateMessage())
-    app.migrations.add(CreateChatRooms())
+
+    app.migrations.add(CreateMessageThirdMigration())
     try await app.autoMigrate()
     
     app.logger.logLevel = .debug
