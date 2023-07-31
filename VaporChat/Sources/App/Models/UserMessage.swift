@@ -47,6 +47,19 @@ final class UserMessage: Model, Content {
            case createdAt
        }
     
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(senderID, forKey: .senderID)
+        try container.encode(receiverID, forKey: .receiverID)
+        
+        try container.encode(message, forKey: .message)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let dateString = dateFormatter.string(from: createdAt ?? Date())
+        try container.encode(dateString, forKey: .createdAt)
+    }
+
     required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             // Decode all properties except for "room"

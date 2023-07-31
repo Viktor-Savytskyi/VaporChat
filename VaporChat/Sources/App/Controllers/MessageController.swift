@@ -77,7 +77,7 @@ class MessageController {
             //if room existing
             roomController?.usersRoom = room
         } else {
-            //create new room for users
+            //create new room for users and save it to DB
             roomController?.usersRoom = Room(users: [userID, oponentID])
             try? await self.app.db.withConnection { self.roomController?.usersRoom?.save(on: $0) }
         }
@@ -94,8 +94,15 @@ class MessageController {
         guard let messages = try? await UserMessage.query(on: req.db).with(\.$room).all().filter({ message in          
             return message.room?.id == roomController?.usersRoom?.id
         }) else { return }
+
         let decodedMessages = try! JSONEncoder().encode(messages)
-        try? await ws.send(raw: decodedMessages, opcode: .binary)
+        do {
+            try await ws.send(raw: decodedMessages, opcode: .binary)
+        } catch {
+            print("Error is", error.localizedDescription)
+        }
+//        try? await ws.send(raw: decodedMessages, opcode: .binary)
+
     }
     
     func createUserMessage(req: Request) async throws -> UserMessage {
