@@ -17,6 +17,9 @@ final class Room: Model, Content {
     @Field(key: "users")
     var users: [String]
     
+    @Children(for: \.$room)
+    var messages: [UserMessage]
+    
     init() { }
     
     init(id: UUID? = UUID(), users: [String]) {

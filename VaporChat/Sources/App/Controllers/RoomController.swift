@@ -10,6 +10,7 @@ import Fluent
 
 class RoomController {
     
+    var usersRoom: Room?
     var db: Database
      var connections = [String : WebSocket?]()
 
@@ -22,7 +23,12 @@ class RoomController {
         print("Users CONNECTIONS: \(connections)")
     }
     
-    func saveAndSendMessage(userMessage: UserMessage) {
+    func saveAndSendMessage(userMessage: UserMessage) async {
+        do {
+            try await usersRoom?.$messages.create(userMessage, on: db)
+        } catch {
+            print(error)
+        }
         db.withConnection {
             userMessage.save(on: $0)
         }.whenComplete {  res in
@@ -53,7 +59,7 @@ class RoomController {
     }
     
     static func getAllRooms(req: Request) async throws -> [Room] {
-        let rooms = try await Room.query(on: req.db).all()
+        let rooms = try await Room.query(on: req.db).with(\.$messages).all()
         return rooms
     }
     

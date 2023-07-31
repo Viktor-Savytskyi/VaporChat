@@ -23,12 +23,16 @@ final class User: Model, Content {
     @Field(key: "lastName")
     var lastName: String
     
+    @Timestamp(key: "lastOnlineDate", on: .none, format: .iso8601)
+    var lastOnlineDate: Date?
+    
     init() {}
     
-    init(id: UUID? = nil, imageUrl: String, firstName: String, lastName: String) {
-        self.id = id
-        self.imageUrl = imageUrl
-        self.firstName = firstName
-        self.lastName = lastName
-    }
+//    init(id: UUID? = nil, imageUrl: String, firstName: String, lastName: String, lastOnlineDate: Date?) {
+//        self.id = id
+//        self.imageUrl = imageUrl
+//        self.firstName = firstName
+//        self.lastName = lastName
+//        self.lastOnlineDate = lastOnlineDate
+//    }
 }

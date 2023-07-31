@@ -8,7 +8,7 @@
 import Vapor
 import Fluent
 
-struct CreateChatRooms: AsyncMigration {
+struct CreateChatRoomsMigration5: AsyncMigration {
     func prepare(on database: FluentKit.Database) async throws {
         try await database.schema("rooms")
             .id()

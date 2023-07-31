@@ -7,14 +7,16 @@
 
 import Fluent
 
-struct CreateUser: AsyncMigration {
+struct CreateUser1: AsyncMigration {
     func prepare(on database: FluentKit.Database) async throws {
         try await database.schema("users")
-            .id()
-            .field("imageUrl", .string, .required)
-            .field("firstName", .string, .required)
-            .field("lastName", .string, .required)
-            .create()
+//            .id()
+//            .field("imageUrl", .string, .required)
+//            .field("firstName", .string, .required)
+//            .field("lastName", .string, .required)
+            .field("lastOnlineDate", .string)
+//            .create()
+            .update()
     }
     
     func revert(on database: Database) async throws {
