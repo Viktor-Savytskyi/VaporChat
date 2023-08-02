@@ -32,6 +32,14 @@ class UserController: RouteCollection {
         return user
     }
     
+    func updateUserOfflineStatus(db: Database, id: String?, isOnline: Bool) async {
+        let onlineStatus = isOnline ? nil : Date()
+        let user = try? await User.query(on: db).all().first(where: { $0.id?.uuidString == id })
+        user?.lastOnlineDate = onlineStatus
+        try? await user?.update(on: db)
+    }
+    
+    
     func deleteAllUsers(req: Request) async throws -> [User] {
         try await User.query(on: req.db).delete()
         return [User]()

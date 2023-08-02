@@ -52,7 +52,6 @@ final class UserMessage: Model, Content {
         try container.encode(id, forKey: .id)
         try container.encode(senderID, forKey: .senderID)
         try container.encode(receiverID, forKey: .receiverID)
-        
         try container.encode(message, forKey: .message)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
@@ -62,7 +61,6 @@ final class UserMessage: Model, Content {
 
     required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            // Decode all properties except for "room"
             id = try container.decode(UUID.self, forKey: .id)
             senderID = try container.decode(String.self, forKey: .senderID)
             receiverID = try container.decode(String.self, forKey: .receiverID)

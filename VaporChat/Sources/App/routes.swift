@@ -12,9 +12,10 @@ func routes(_ app: Application) throws {
     */
     
     let userController = UserController()
+    let messageController = MessageController()
     try app.register(collection: userController)
-    let messageController = MessageController(app: app)
-    messageController.connect()
+    let connectionController = ConnectionController(app: app)
+    connectionController.connect()
     app.post("messages", use: messageController.createUserMessage)
     app.get("messages", use: messageController.getAllMessages)
     app.delete("messages", use: messageController.deleteAllMessages)
