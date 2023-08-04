@@ -26,4 +26,12 @@ final class Room: Model, Content {
         self.id = id
         self.users = users
     }
+    
+    func convertToJsonData() throws -> Data {
+        do {
+            return try JSONEncoder().encode(self)
+        } catch {
+            throw error
+        }
+    }
 }
