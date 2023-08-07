@@ -2,15 +2,6 @@ import Vapor
  
 
 func routes(_ app: Application) throws {
-   /* app.get { req async in
-        "It works!"
-    }
-    
-    app.get("hello") { req async -> String in
-        "Hello, world!"
-    }
-    */
-    
     let userController = UserController()
     let messageController = MessageController()
     let roomController = RoomController(db: app.db)
@@ -25,8 +16,6 @@ func routes(_ app: Application) throws {
     app.delete("messages", use: messageController.deleteAllMessages)
     app.get("rooms", use: roomController.getAllRooms)
     app.delete("rooms", use: roomController.deleteAllRooms)
-
-    
 }
 
 

@@ -15,13 +15,12 @@ public func configure(_ app: Application) async throws {
     ), as: .psql)
 
     
-    app.migrations.add(CreateChatRoomsMigration5())
-    app.migrations.add(CreateMessageMigration5())
+//    app.migrations.add(CreateChatRoomsMigration5())
+//    app.migrations.add(CreateMessageMigration5())
 //    app.migrations.add(CreateUser1())
     try await app.autoMigrate()
-    
     app.logger.logLevel = .debug
-
+    
     // register routes
     try routes(app)
 }

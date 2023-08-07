@@ -8,18 +8,24 @@
 import Vapor
 import Fluent
 
+enum StringFields: String {
+    case userID
+    case oponentID
+    case chat
+}
+
 class ConnectionController {
     
     var app: Application
     var roomController: RoomController?
     var messageController: MessageController?
     var userController: UserController?
-    let userID = "userID"
-    let oponentID = "oponentID"
-    var isNewRoom = false
+    var isFirstPing = false
     var connections = [String : WebSocket?]() {
         didSet {
             roomController?.connections = connections
+            userController?.connections = connections
+            messageController?.connections = connections
         }
     }
     
@@ -31,55 +37,55 @@ class ConnectionController {
         connections[userID] = ws
         print("Users CONNECTIONS: \(connections)")
     }
-     
+    
     func connect() {
-        var firstPing = true
-
-        app.webSocket("chat") { req, ws in
-            guard let userID = try? req.query.get(String.self, at: self.userID) else { return }
+        app.webSocket(PathComponent(stringLiteral: StringFields.chat.rawValue)) { req, ws in
+            guard let userID = try? req.query.get(String.self,
+                                                  at: StringFields.userID.rawValue) else { return }
             self.addUser(userID: userID, ws: ws)
+            self.isFirstPing = true
             
             ws.onClose.whenComplete { _ in
                 print("webSocket closed")
                 self.connections[userID] = nil
-                firstPing = true
-                //here add logic to set offline status for user
+                self.userController?.updateUserOfflineStatus(req: req,
+                                                             id: userID,
+                                                             isOnline: false)
             }
             
             ws.onPing { ws, byte in
-                
-//                if firstPing {
-                    await self.roomController?.sendRoomsWithAllMessages(ws: ws, req: req, userID: userID)
-//                    await self.sendRoomMessagesHistory(ws: ws, req: req, userID: userID)
-//                    await self.userController?.updateUserOfflineStatus(db: self.app.db, id: userID, isOnline: true)
-//                    self.firstPing = false
-//                } else {
-//                    self.checkIsUserOnline()
-//                }
+                if self.isFirstPing {
+                    
+                    await self.roomController?.sendRoomsWithAllMessages(ws: ws,
+                                                                        req: req,
+                                                                        userID: userID)
+                    self.userController?.updateUserOfflineStatus(req: req,
+                                                                 id: userID,
+                                                                 isOnline: true)
+                    self.isFirstPing = false
+                }
             }
             
-             ws.onBinary { ws, data in
-                 do {
-                     let userMessage = try JSONDecoder().decode(UserMessage.self, from: data)
-                     await self.roomController?.createOrFindUserRoom(ws: ws, userID: userMessage.senderID, oponentID: userMessage.receiverID) { newRoom in
-                         self.isNewRoom = newRoom
-                     }
-                     await self.roomController?.saveMessage(userMessage: userMessage) {
-                         userMessage.room?.id = self.roomController?.usersRoom.id
-                     }
-                     do {
-                         try await self.roomController?.usersRoom?.$messages.create(userMessage, on: req.db)
-                     } catch {
-                         print(error.localizedDescription)
-                     }
-                     
-                     
-                     await self.roomController?.sendData(userMessage: userMessage, isNewRoom: self.isNewRoom)
-                     self.isNewRoom = false
-                 } catch {
-                     print(error.localizedDescription)
-                 }
+            ws.onText { ws, text in
+                self.messageController?.sendMessage(text: text)
+            }
+            
+            ws.onBinary { ws, data in
+                do {
+                    let userMessage = try JSONDecoder().decode(UserMessage.self,
+                                                               from: data)
+                    await self.roomController?.getUsersRoom(ws: ws,
+                                                            userID: userMessage.senderID,
+                                                            oponentID: userMessage.receiverID)
+                    await self.messageController?.saveMessage(userMessage: userMessage,
+                                                              db: req.db)
+                    try await self.roomController?.saveMessageIntoRoom(userMessage: userMessage)
+                    await self.roomController?.sendData(userMessage: userMessage)
+                } catch {
+                    print(error.localizedDescription)
+                }
             }
         }
     }
 }
+
