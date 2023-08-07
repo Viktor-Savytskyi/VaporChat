@@ -23,6 +23,7 @@ class MessageController {
     
     var connections: [String : WebSocket?]?
 
+    //save created message to DB
     func saveMessage(userMessage: UserMessage, db: Database) async {
         db.withConnection {
             userMessage.save(on: $0)
@@ -42,18 +43,33 @@ class MessageController {
               let senderID = dictMessage[MessageField.senderID.rawValue],
               let message = dictMessage[MessageField.message.rawValue] else { return }
         
+        // send if message.text = "typing"
         if message == UserTypingState.typing.rawValue {
             self.broadcastTypingIndicator(userTypingState: .typing,
                                           for: receiverID,
                                           senderID: senderID)
+        // send if message.text = "stopTyping"
         } else if message == UserTypingState.stopTyping.rawValue {
             self.broadcastTypingIndicator(userTypingState: .stopTyping,
                                           for: receiverID,
                                           senderID: senderID)
         } else {
-           //here may be handle another text messages
+           //hande another text message. Now here hande onlineUsersString
         }
     }
+    
+    func broadcastTypingIndicator(userTypingState: UserTypingState, for receiverID: String, senderID: String) {
+        guard let userWebSocket = connections?[receiverID] else { return }
+        let typingMessage =
+        ("""
+                \(MessageField.senderID.rawValue) : \(senderID)
+                \(MessageField.receiverID.rawValue) : \(receiverID)
+                \(MessageField.message.rawValue) : \(userTypingState.rawValue)
+         """)
+        userWebSocket?.send(typingMessage)
+    }
+    
+    //MARK: - Message requests
     
     func createUserMessage(req: Request) async throws -> UserMessage {
         let userMessage = try req.content.decode(UserMessage.self)
@@ -69,17 +85,5 @@ class MessageController {
     func deleteAllMessages(req: Request) async throws -> [UserMessage] {
         try await UserMessage.query(on: req.db).delete()
         return [UserMessage]()
-    }
-    
-    
-    func broadcastTypingIndicator(userTypingState: UserTypingState, for receiverID: String, senderID: String) {
-        guard let userWebSocket = connections?[receiverID] else { return }
-        let typingMessage =
-        ("""
-                \(MessageField.senderID.rawValue) : \(senderID)
-                \(MessageField.receiverID.rawValue) : \(receiverID)
-                \(MessageField.message.rawValue) : \(userTypingState.rawValue)
-         """)
-        userWebSocket?.send(typingMessage)
     }
 }

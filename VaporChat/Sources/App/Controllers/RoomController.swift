@@ -19,6 +19,7 @@ class RoomController {
         self.db = db
     }
     
+    // send filtered by usersIDs rooms at first loading
     func sendRoomsWithAllMessages(ws: WebSocket, req: Request, userID: String) async {
         let filteredRooms = try? await Room.query(on: req.db).with(\.$messages).all().filter({ $0.users.contains(userID) && !$0.messages.isEmpty })
         let decodedRooms = try! JSONEncoder().encode(filteredRooms)
@@ -52,6 +53,8 @@ class RoomController {
         }
     }
     
+    
+    //check is existing room, create new Room if need -- set result to var usersRoom: Room!
     func getUsersRoom(ws: WebSocket,
                       userID: String,
                       oponentID: String) async {
@@ -92,6 +95,7 @@ class RoomController {
         })
     }
     
+    // convert incoming data into JSON
     func convertObjectIntoData(userMessage: UserMessage, isNewRoom: Bool) async -> Data? {
         if isNewRoom {
             //create dialoge room with new user
@@ -99,12 +103,12 @@ class RoomController {
             let decodedRoom = try? JSONEncoder().encode(filteredRoom)
             return decodedRoom
         } else {
-            //create mesage
+            // create message
             return try? userMessage.convertToJsonData()
         }
     }
     
-    //MARK: -  Room requessts
+    // MARK: -  Room requessts
     
     func getAllRooms(req: Request) async throws -> [Room] {
         let param = "id"

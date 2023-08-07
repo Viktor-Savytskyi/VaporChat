@@ -74,12 +74,17 @@ class ConnectionController {
                 do {
                     let userMessage = try JSONDecoder().decode(UserMessage.self,
                                                                from: data)
+                    //create or find room of users
                     await self.roomController?.getUsersRoom(ws: ws,
                                                             userID: userMessage.senderID,
                                                             oponentID: userMessage.receiverID)
+                    //save created message to DB
                     await self.messageController?.saveMessage(userMessage: userMessage,
                                                               db: req.db)
+                    
+                    //set to created message parent RoomID and save message to array of Room messages
                     try await self.roomController?.saveMessageIntoRoom(userMessage: userMessage)
+                    
                     await self.roomController?.sendData(userMessage: userMessage)
                 } catch {
                     print(error.localizedDescription)

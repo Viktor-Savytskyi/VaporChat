@@ -37,6 +37,13 @@ class UserController: RouteCollection {
         }
     }
     
+    func createOnlineUsersStringArray(from users: [User]) -> String {
+        users.map {
+            guard let id = $0.id?.uuidString,
+                  let date = $0.lastOnlineDate else { return "" }
+            return "\(id)" + " : " + "\(date)" }.joined(separator: "\n")
+    }
+    
     //MARK: - Users requests
     
     func getUsers(req: Request) async throws -> [User] {
@@ -61,11 +68,3 @@ class UserController: RouteCollection {
     }
 }
 
-extension UserController {
-    func createOnlineUsersStringArray(from users: [User]) -> String {
-        users.map {
-            guard let id = $0.id?.uuidString,
-                  let date = $0.lastOnlineDate else { return "" }
-            return "\(id)" + " : " + "\(date)" }.joined(separator: "\n")
-    }
-}
